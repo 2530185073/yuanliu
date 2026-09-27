@@ -3,18 +3,28 @@ import { ms, pct, yuan } from "@/lib/format";
 import type { OfferingListItem } from "@/lib/types";
 import { CompareToggle } from "@/components/compare/CompareToggle";
 import { availabilityTone, Badge, latencyTone, VerifyBadge } from "@/components/ui/Badges";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { UptimeBars } from "@/components/ui/UptimeBars";
 
-export const ROW_GRID = "md:grid md:grid-cols-[minmax(0,1fr)_88px_72px_200px_76px_28px] md:items-center md:gap-5";
+export const ROW_GRID = "md:grid md:grid-cols-[minmax(0,1fr)_88px_72px_200px_76px_40px_28px] md:items-center md:gap-5";
 
 export function OfferingRowHeader() {
   return (
     <div className={`hidden border-b border-line px-4 pb-2.5 text-[12px] text-fg-3 ${ROW_GRID}`}>
       <span>渠道</span>
-      <span className="text-right">刀价</span>
+      <span className="text-right">
+        刀价
+        <InfoTip label="什么是刀价">每消耗 1 美元官方额度，实际要付的人民币。倍率和充值比例已折算进去，所以不同站可以直接比。</InfoTip>
+      </span>
       <span className="text-right">首字</span>
       <span>24 小时</span>
       <span>验真</span>
+      <span className="text-right">
+        综合
+        <InfoTip label="综合分怎么算" align="end">
+          可用率 30% · 验真 25% · 真实单价 15% · 延迟 15% · 口碑 10% · 站龄 5%。推广位不影响分数。
+        </InfoTip>
+      </span>
       <span />
     </div>
   );
@@ -54,6 +64,7 @@ export function OfferingRow({ item }: { item: OfferingListItem }) {
         </div>
         <span className="tnum text-[13px] text-fg-3 md:hidden">{ms(item.ttft)}</span>
         <VerifyBadge status={item.verify} stale={Boolean(item.excludedReason)} />
+        <span className="tnum hidden text-right text-[13px] text-fg-2 md:block">{item.score}</span>
         <span className="ml-auto md:ml-0">
           <CompareToggle id={item.id} />
         </span>

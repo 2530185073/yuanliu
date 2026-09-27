@@ -5,8 +5,8 @@ export const FX = 7.2;
 
 export function yuan(value: number): string {
   const abs = Math.abs(value);
-  const digits = abs < 0.01 ? 4 : abs < 0.1 ? 3 : abs < 10 ? 2 : 1;
-  return `¥${value.toFixed(digits).replace(/(\.\d*?[1-9])0+$|\.0+$/, "$1")}`;
+  const digits = abs < 0.01 ? 4 : abs < 0.1 ? 3 : abs < 10 ? 2 : abs < 100 ? 1 : 0;
+  return `¥${value.toFixed(digits)}`;
 }
 
 export const pct = (value: number | null, digits = 1) => (value === null ? "—" : `${value.toFixed(digits)}%`);

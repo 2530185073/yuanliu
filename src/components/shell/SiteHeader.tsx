@@ -11,10 +11,10 @@ export function SiteHeader() {
           <BrandMark />
           <span className="text-[15px] font-semibold tracking-tight">源流</span>
         </Link>
-        <div className="min-w-0 flex-1">
+        <div className="hidden flex-1 md:block">
           <NavLinks />
         </div>
-        <div className="hidden shrink-0 items-center gap-2 sm:flex">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <ProtoButton className="btn text-fg-2 hover:text-fg" message="登录：邮箱验证码、Linux.do 或 GitHub。">
             登录
           </ProtoButton>
@@ -22,6 +22,9 @@ export function SiteHeader() {
             入驻
           </ProtoButton>
         </div>
+      </div>
+      <div className="border-t border-line md:hidden">
+        <NavLinks compact />
       </div>
     </header>
   );

@@ -2,6 +2,19 @@ import { familyLabel, type Family } from "./catalog";
 import { between, chance, int, pick, round, type Rng } from "./rand";
 import type { Check } from "./types";
 
+/** 每项检查测什么，用于页面上的说明 */
+export const CHECK_INFO: Record<string, string> = {
+  fingerprint: "响应 ID、模型字段、流式事件格式是否和官方一致，用来识别套壳。",
+  quiz: "固定题加每日轮换题，答错率高说明被换成了弱模型。",
+  tokens: "站点返回的 token 数和官方计算方式是否一致。",
+  injection: "输入 token 是否比请求内容多，多出来的部分通常是偷偷加的系统提示词。",
+  context: "在长文本里埋入信息再提问，检查是否截断了上下文。",
+  agent: "工具调用和流式协议能否被 Claude Code、Codex 等客户端正常使用。",
+  cache: "重复前缀是否命中缓存并按缓存价计费。",
+  billing: "用平台自己的账号发已知用量的请求，核对实际扣费和宣称倍率。",
+  iq: "让模型画鹈鹕骑自行车，肉眼判断能力是否正常。",
+};
+
 interface CheckContext {
   family: Family;
   text: string;

@@ -30,8 +30,21 @@ export function OfferingBlock({ offering: o, channel }: { offering: Offering; ch
         </div>
       </div>
 
-      <div className="scroll-x mt-4">
-        <table className="w-full min-w-[480px] text-[13px]">
+      <ul className="mt-4 divide-y divide-line text-[13px] md:hidden">
+        {o.quotes.map((q) => (
+          <li key={q.modelId} className="py-2.5">
+            <Link href={`/models/${q.modelId}`} className="hover:underline">
+              {q.modelId}
+            </Link>
+            <p className="tnum mt-0.5 text-fg-3">
+              入 {yuan(q.realInput)} · 出 <span className="font-medium text-fg">{yuan(q.realOutput)}</span> · 首字 {ms(q.ttftMs)}
+            </p>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-4 hidden md:block">
+        <table className="w-full text-[13px]">
           <thead>
             <tr className="text-left text-[12px] text-fg-3">
               <th className="pb-2 font-normal">模型</th>

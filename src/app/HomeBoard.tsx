@@ -1,12 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FAMILIES, type Family } from "@/lib/catalog";
-import type { OfferingListItem } from "@/lib/types";
+import type { OfferingListItem, SourceType } from "@/lib/types";
 import { OfferingRow, OfferingRowHeader } from "@/components/offer/OfferingRow";
+import { Popover } from "@/components/ui/Popover";
 
-type SortKey = "score" | "dao" | "ttft" | "avail";
+export type SortKey = "score" | "dao" | "ttft" | "avail";
+
+export interface BoardState {
+  family: Family | "all";
+  q: string;
+  sort: SortKey;
+  verified: boolean;
+  sources: SourceType[];
+  scenes: string[];
+  invoice: boolean;
+}
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "score", label: "综合" },
@@ -15,34 +26,67 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "avail", label: "最稳" },
 ];
 
+const SOURCES: SourceType[] = ["官转", "号池", "官方Key", "云厂商", "Kiro", "混合", "逆向"];
+const SCENES = ["Claude Code", "Codex CLI", "可蒸馏", "高缓存", "高并发"];
 const POPULAR = ["claude-opus-5", "gpt-5.6-sol", "gemini-3.7-flash", "grok-4.6"];
 
-export function HomeBoard({ items, summary }: { items: OfferingListItem[]; summary: string }) {
-  const [family, setFamily] = useState<Family | "all">("all");
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortKey>("score");
-  const [onlyVerified, setOnlyVerified] = useState(false);
+function toQuery(s: BoardState) {
+  const p = new URLSearchParams();
+  if (s.family !== "all") p.set("family", s.family);
+  if (s.q) p.set("q", s.q);
+  if (s.sort !== "score") p.set("sort", s.sort);
+  if (s.verified) p.set("verified", "1");
+  if (s.sources.length) p.set("source", s.sources.join(","));
+  if (s.scenes.length) p.set("scene", s.scenes.join(","));
+  if (s.invoice) p.set("invoice", "1");
+  const str = p.toString();
+  return str ? `?${str}` : "";
+}
+
+const toggle = <T,>(list: T[], v: T) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+
+function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2 py-1 text-[13px] text-fg-2">
+      <input type="checkbox" checked={checked} onChange={onChange} className="h-3.5 w-3.5 accent-fg" />
+      {label}
+    </label>
+  );
+}
+
+export function HomeBoard({ items, summary, initial }: { items: OfferingListItem[]; summary: string; initial: BoardState }) {
+  const [s, setS] = useState<BoardState>(initial);
   const [showExcluded, setShowExcluded] = useState(false);
+  const set = (patch: Partial<BoardState>) => setS((prev) => ({ ...prev, ...patch }));
+
+  useEffect(() => {
+    window.history.replaceState(null, "", `${window.location.pathname}${toQuery(s)}`);
+  }, [s]);
 
   const { rows, hidden } = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = s.q.trim().toLowerCase();
     const matched = items.filter(
       (it) =>
-        (family === "all" || it.family === family) &&
-        (!onlyVerified || it.verify === "pass") &&
+        (s.family === "all" || it.family === s.family) &&
+        (!s.verified || it.verify === "pass") &&
+        (!s.invoice || it.invoice) &&
+        (!s.sources.length || s.sources.includes(it.sourceType)) &&
+        s.scenes.every((sc) => it.scenes.includes(sc)) &&
         (!q || `${it.channelName} ${it.group} ${it.primaryModel}`.toLowerCase().includes(q)),
     );
     const pool = showExcluded ? matched : matched.filter((it) => !it.excludedReason);
     const sorted = [...pool].sort((a, b) => {
       if (Boolean(a.excludedReason) !== Boolean(b.excludedReason)) return a.excludedReason ? 1 : -1;
-      if (sort === "dao") return a.daoPrice - b.daoPrice;
-      if (sort === "ttft") return (a.ttft ?? Infinity) - (b.ttft ?? Infinity);
-      if (sort === "avail") return (b.h24 ?? -1) - (a.h24 ?? -1) || b.score - a.score;
+      if (s.sort === "dao") return a.daoPrice - b.daoPrice;
+      if (s.sort === "ttft") return (a.ttft ?? Infinity) - (b.ttft ?? Infinity);
+      if (s.sort === "avail") return (b.h24 ?? -1) - (a.h24 ?? -1) || b.score - a.score;
       return b.score - a.score;
     });
-    const sponsored = sort === "score" && !q ? sorted.filter((it) => it.sponsored) : [];
+    const sponsored = s.sort === "score" && !q ? sorted.filter((it) => it.sponsored) : [];
     return { rows: [...sponsored, ...sorted.filter((it) => !sponsored.includes(it))], hidden: matched.length - pool.length };
-  }, [items, family, query, sort, onlyVerified, showExcluded]);
+  }, [items, s, showExcluded]);
+
+  const filterCount = s.sources.length + s.scenes.length + Number(s.invoice) + Number(s.verified);
 
   return (
     <>
@@ -60,10 +104,11 @@ export function HomeBoard({ items, summary }: { items: OfferingListItem[]; summa
           </svg>
           <input
             type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={s.q}
+            onChange={(e) => set({ q: e.target.value })}
             onKeyDown={(e) => e.key === "Enter" && document.getElementById("board")?.scrollIntoView({ behavior: "smooth" })}
             placeholder="搜索渠道、分组或模型"
+            aria-label="搜索渠道、分组或模型"
             className="input h-12 rounded-xl pl-11 text-[15px]"
           />
         </div>
@@ -76,37 +121,62 @@ export function HomeBoard({ items, summary }: { items: OfferingListItem[]; summa
         </p>
       </section>
 
-      <section id="board" className="mx-auto max-w-[1120px] scroll-mt-20 px-5">
+      <section id="board" className="mx-auto max-w-[1120px] scroll-mt-28 px-5">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
-          <div className="seg">
-            <button type="button" data-on={family === "all"} onClick={() => setFamily("all")}>
+          <div className="seg scroll-x max-w-full">
+            <button type="button" data-on={s.family === "all"} onClick={() => set({ family: "all" })}>
               全部
             </button>
             {FAMILIES.map((f) => (
-              <button key={f.id} type="button" data-on={family === f.id} onClick={() => setFamily(f.id)}>
+              <button key={f.id} type="button" data-on={s.family === f.id} onClick={() => set({ family: f.id })}>
                 {f.short}
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-3">
-            <label className="flex cursor-pointer items-center gap-2 text-[13px] text-fg-2">
-              <input type="checkbox" checked={onlyVerified} onChange={(e) => setOnlyVerified(e.target.checked)} className="h-3.5 w-3.5 accent-fg" />
-              仅看已验真
-            </label>
+          <div className="flex items-center gap-2">
+            <Popover label="筛选" badge={filterCount}>
+              <div className="space-y-4">
+                <div>
+                  <p className="mb-1 text-[12px] text-fg-3">来源</p>
+                  <div className="grid grid-cols-2">
+                    {SOURCES.map((src) => (
+                      <Check key={src} label={src} checked={s.sources.includes(src)} onChange={() => set({ sources: toggle(s.sources, src) })} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-1 text-[12px] text-fg-3">场景</p>
+                  <div className="grid grid-cols-2">
+                    {SCENES.map((sc) => (
+                      <Check key={sc} label={sc} checked={s.scenes.includes(sc)} onChange={() => set({ scenes: toggle(s.scenes, sc) })} />
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t border-line pt-3">
+                  <Check label="仅看已验真" checked={s.verified} onChange={() => set({ verified: !s.verified })} />
+                  <Check label="可开发票" checked={s.invoice} onChange={() => set({ invoice: !s.invoice })} />
+                </div>
+                {filterCount > 0 && (
+                  <button type="button" onClick={() => set({ sources: [], scenes: [], invoice: false, verified: false })} className="text-[13px] text-fg-3 hover:text-fg">
+                    清除筛选
+                  </button>
+                )}
+              </div>
+            </Popover>
             <div className="seg">
-              {SORTS.map((s) => (
-                <button key={s.key} type="button" data-on={sort === s.key} onClick={() => setSort(s.key)}>
-                  {s.label}
+              {SORTS.map((o) => (
+                <button key={o.key} type="button" data-on={s.sort === o.key} onClick={() => set({ sort: o.key })}>
+                  {o.label}
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="card overflow-hidden pt-3">
+        <div className="card pt-3">
           <OfferingRowHeader />
           {rows.length ? (
-            <div className="divide-y divide-line">
+            <div className="divide-y divide-line overflow-hidden rounded-b-xl">
               {rows.map((item) => (
                 <OfferingRow key={item.id} item={item} />
               ))}

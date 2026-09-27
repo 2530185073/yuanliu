@@ -22,10 +22,18 @@ export async function generateMetadata(props: PageProps<"/channels/[slug]">) {
   return { title: getChannel(slug)?.name ?? "渠道不存在" };
 }
 
+const TABS = [
+  { key: "offers", label: "在售" },
+  { key: "stability", label: "稳定性" },
+  { key: "verify", label: "验真" },
+  { key: "reviews", label: "评价" },
+];
+
 export default async function ChannelPage(props: PageProps<"/channels/[slug]">) {
-  const { slug } = await props.params;
+  const [{ slug }, sp] = await Promise.all([props.params, props.searchParams]);
   const ch = getChannel(slug);
   if (!ch) notFound();
+  const initialTab = Math.max(0, TABS.findIndex((t) => t.key === sp.tab));
 
   const offerings = [...ch.offerings].sort((a, b) => b.score - a.score);
   const best = offerings.find((o) => !o.probe.excludedReason) ?? offerings[0];
@@ -98,7 +106,7 @@ export default async function ChannelPage(props: PageProps<"/channels/[slug]">) 
       )}
 
       <div className="mt-12">
-        <Tabs tabs={[{ label: "在售", count: offerings.length }, { label: "稳定性" }, { label: "验真" }, { label: "评价", count: ch.reviewCount }]}>
+        <Tabs tabs={TABS.map((t) => ({ ...t, count: t.key === "offers" ? offerings.length : t.key === "reviews" ? ch.reviewCount : undefined }))} initial={initialTab}>
           <div className="space-y-4">
             {offerings.map((o) => (
               <OfferingBlock key={o.id} offering={o} channel={ch} />
