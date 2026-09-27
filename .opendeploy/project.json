@@ -1,0 +1,12 @@
+{
+  "project_id": "08446276-c65e-44c7-a877-9347ae4a6dbf",
+  "service_id": "000af790-0c56-4aaa-b2a0-43f324bd532d",
+  "deployment_id": "52fce241-af15-479f-bff8-8bed132bbdfa",
+  "account_binding_url": "https://dashboard.opendeploy.dev/guest/ec0e6c77-5ab2-46a2-aa6f-9203c499b750?h=2cf5e438e45079ac",
+  "version": 1,
+  "root": "/Users/xuruizhe/Desktop/code/ziyuanzhenghe",
+  "updated_at": "2026-09-27T16:42:53.078Z",
+  "live_url": "https://000af790.opendeploy.site",
+  "project": "08446276-c65e-44c7-a877-9347ae4a6dbf",
+  "service": "000af790-0c56-4aaa-b2a0-43f324bd532d"
+}
