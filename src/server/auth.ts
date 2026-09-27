@@ -32,7 +32,16 @@ export async function requestLoginCode(email: string): Promise<{ ok: true; devCo
   const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
   await db.insert(loginCodes).values({ email, codeHash: hmac(`${email}:${code}`), expiresAt: new Date(Date.now() + CODE_TTL_MS) });
   const delivered = await sendMail(email, `源流登录验证码 ${code}`, `你的登录验证码是 ${code}，10 分钟内有效。如果不是你本人操作，请忽略这封邮件。`);
-  if (!delivered && !mailConfigured() && (process.env.NODE_ENV !== "production" || process.env.LOGIN_DEV_CODES === "1")) return { ok: true, devCode: code };
+  if (!delivered && !mailConfigured()) {
+    if (process.env.NODE_ENV !== "production") return { ok: true, devCode: code };
+    if (process.env.LOGIN_DEV_CODES === "1") {
+      // Admin codes must never be shown on the page in production: anyone could type the admin email.
+      const [existing] = await db.select({ role: users.role }).from(users).where(eq(users.email, email));
+      if (!adminEmails().includes(email) && existing?.role !== "admin") return { ok: true, devCode: code };
+      console.info(`[auth] admin login code for ${email}: ${code}`);
+      return { ok: true };
+    }
+  }
   if (!delivered) return { ok: false, error: "邮件发送失败，请稍后再试" };
   return { ok: true };
 }
