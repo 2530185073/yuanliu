@@ -4,12 +4,11 @@ import { useEffect, useState, type ReactNode } from "react";
 
 function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   useEffect(() => {
-    const timer = setTimeout(onDone, 2800);
+    const timer = setTimeout(onDone, 2600);
     return () => clearTimeout(timer);
   }, [onDone]);
   return (
-    <div className="rise fixed bottom-6 left-1/2 z-[60] w-[min(92vw,460px)] -translate-x-1/2 rounded-md border border-ink bg-ink px-4 py-3 text-sm text-card shadow-[4px_4px_0_var(--color-signal)]">
-      <span className="mr-2 font-mono text-[11px] tracking-widest text-signal">原型</span>
+    <div className="fade-in fixed bottom-6 left-1/2 z-[60] w-[min(92vw,420px)] -translate-x-1/2 rounded-xl bg-fg px-4 py-3 text-[13px] text-white shadow-lg">
       {message}
     </div>
   );
@@ -27,19 +26,7 @@ export function ProtoButton({ children, message, className }: { children: ReactN
   );
 }
 
-export function ProtoModal({
-  label,
-  title,
-  subtitle,
-  className,
-  children,
-}: {
-  label: ReactNode;
-  title: string;
-  subtitle?: string;
-  className?: string;
-  children: ReactNode;
-}) {
+export function ProtoModal({ label, title, className, children }: { label: ReactNode; title: string; className?: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!open) return;
@@ -54,19 +41,15 @@ export function ProtoModal({
       </button>
       {open && (
         <div className="fixed inset-0 z-[55] flex items-center justify-center p-4">
-          <button type="button" aria-label="关闭" className="absolute inset-0 bg-ink/45 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
-          <div className="rise panel relative w-full max-w-lg rounded-md p-6 shadow-[6px_6px_0_var(--color-ink)]">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="eyebrow">原型演示</p>
-                <h3 className="mt-1 font-display text-xl font-black">{title}</h3>
-                {subtitle && <p className="mt-1 text-sm text-ink-3">{subtitle}</p>}
-              </div>
-              <button type="button" onClick={() => setOpen(false)} className="text-2xl leading-none text-ink-3 hover:text-ink">
+          <button type="button" aria-label="关闭" className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
+          <div className="fade-in card relative w-full max-w-md p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[16px] font-semibold">{title}</h3>
+              <button type="button" onClick={() => setOpen(false)} className="text-[20px] leading-none text-fg-3 hover:text-fg" aria-label="关闭">
                 ×
               </button>
             </div>
-            <div className="mt-5 text-sm leading-relaxed text-ink-2">{children}</div>
+            <div className="mt-4 text-[14px] text-fg-2">{children}</div>
           </div>
         </div>
       )}
