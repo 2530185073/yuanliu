@@ -1,4 +1,3 @@
-import "server-only";
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { rawRows, type DB } from "@/db";
 import { channels, offeringModels, offerings, offeringStats, probeResults, reviews, verificationRuns } from "@/db/schema";

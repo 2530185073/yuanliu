@@ -19,12 +19,31 @@
 
 ```bash
 pnpm install
-pnpm dev      # http://localhost:3000
-pnpm build    # 生产构建（全部页面静态生成）
-pnpm lint
+pnpm dev        # http://localhost:3000，首次启动自动建表并导入演示数据
+pnpm test       # 单元测试 + 基于本地模拟中转站的探测、验真、适配器测试
+pnpm typecheck && pnpm lint
 ```
 
-需要 Node.js 20.9+。技术栈：Next.js 16（App Router、Turbopack）、React 19、Tailwind CSS 4、TypeScript。
+需要 Node.js 20.9+。技术栈：Next.js 16、React 19、Tailwind CSS 4、Drizzle ORM；数据库默认为内置 PGlite，设置 `DATABASE_URL` 即切换到 Postgres。
+
+开发环境未配置邮件时，登录页会直接显示验证码；第一个登录的用户自动成为管理员。
+
+## 部署
+
+```bash
+pnpm install --frozen-lockfile
+pnpm build
+pnpm start      # 监听 PORT，默认 3000；健康检查 GET /api/health
+```
+
+环境变量见 `.env.example`，生产环境至少需要：
+
+- `APP_SECRET`：加密探测 Key、签名会话
+- `DATABASE_URL`：Postgres。不设则数据写在 `.data/`，重新部署会丢失
+- `ADMIN_EMAILS`：管理员邮箱
+- `SMTP_URL`：登录验证码邮件。仅演示时可改设 `LOGIN_DEV_CODES=1`
+
+探测调度默认随 Web 进程启动。多实例部署时，Web 进程设 `SCHEDULER=off`，另起一个 `pnpm worker`。
 
 ## 目录
 

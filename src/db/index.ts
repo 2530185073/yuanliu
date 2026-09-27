@@ -1,4 +1,3 @@
-import "server-only";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import type { SQL } from "drizzle-orm";
