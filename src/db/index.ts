@@ -34,11 +34,16 @@ async function open(): Promise<DB> {
 
 /** 进程内单例；开发环境热更新时复用同一个连接，避免重复打开 PGlite 数据目录 */
 export function getDb(): Promise<DB> {
-  g.__ylDb ??= open().then(async (db) => {
-    const { ensureSeeded } = await import("./seed");
-    await ensureSeeded(db);
-    return db;
-  });
+  g.__ylDb ??= open()
+    .then(async (db) => {
+      const { ensureSeeded } = await import("./seed");
+      await ensureSeeded(db);
+      return db;
+    })
+    .catch((e) => {
+      g.__ylDb = undefined;
+      throw e;
+    });
   return g.__ylDb;
 }
 

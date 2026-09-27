@@ -43,3 +43,7 @@ next-env.d.ts
 
 # local database
 /.data/
+
+# opendeploy: keep only shared project context
+/.opendeploy/*
+!/.opendeploy/project.json

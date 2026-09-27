@@ -1,4 +1,5 @@
-import { count } from "drizzle-orm";
+import { count, eq, getTableName, is, sql } from "drizzle-orm";
+import { PgTable } from "drizzle-orm/pg-core";
 import { MODELS } from "@/lib/catalog";
 import { NOW } from "@/lib/probe";
 import { between, chance, int, seeded } from "@/lib/rand";
@@ -11,11 +12,36 @@ async function insertChunks<T>(rows: T[], insert: (chunk: T[]) => Promise<unknow
   for (let i = 0; i < rows.length; i += size) await insert(rows.slice(i, i + size));
 }
 
-/** 首次启动时把演示数据写入数据库；已有数据则跳过 */
-export async function ensureSeeded(db: DB) {
-  const [{ n }] = await db.select({ n: count() }).from(t.models);
-  if (n > 0) return;
+const SEEDED = "system.seeded";
 
+/**
+ * 首次启动时把演示数据写入数据库；已完成则跳过。
+ * 整个过程在一个事务里并持有咨询锁：多实例同时启动只会写一次，中途被杀掉也不会留下半套数据。
+ */
+export async function ensureSeeded(db: DB) {
+  const [done] = await db.select({ id: t.auditLogs.id }).from(t.auditLogs).where(eq(t.auditLogs.action, SEEDED)).limit(1);
+  if (done) return;
+
+  await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(724301)`);
+    const [again] = await tx.select({ id: t.auditLogs.id }).from(t.auditLogs).where(eq(t.auditLogs.action, SEEDED)).limit(1);
+    if (again) return;
+
+    const [[{ models }], [{ stats }]] = await Promise.all([
+      tx.select({ models: count() }).from(t.models),
+      tx.select({ stats: count() }).from(t.offeringStats),
+    ]);
+    if (models === 0) await seed(tx as unknown as DB);
+    else if (stats === 0) {
+      const tables = (Object.values(t) as unknown[]).filter((v): v is PgTable => is(v, PgTable));
+      await tx.execute(sql.raw(`truncate ${tables.map((v) => `"${getTableName(v)}"`).join(", ")} cascade`));
+      await seed(tx as unknown as DB);
+    }
+    await tx.insert(t.auditLogs).values({ actorId: null, action: SEEDED, target: "demo", detail: {} });
+  });
+}
+
+async function seed(db: DB) {
   const [{ CHANNELS }, { SUPPLIERS, SUPPLY_ITEMS, WANTED_POSTS }, { encodeBars }] = await Promise.all([
     import("@/lib/data"),
     import("@/lib/supply"),
