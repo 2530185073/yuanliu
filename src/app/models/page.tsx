@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FAMILIES, MODELS } from "@/lib/catalog";
-import { compareRows } from "@/lib/data";
+import { connection } from "next/server";
+import { FAMILIES } from "@/lib/catalog";
 import { yuan } from "@/lib/format";
+import { getCompareRows, getModels } from "@/server/repo";
 
 export const metadata: Metadata = { title: "按模型比价" };
 
-export default function ModelsPage() {
+export default async function ModelsPage() {
+  await connection();
+  const models = await getModels();
+  const rowsOf = new Map(await Promise.all(models.map(async (m) => [m.id, (await getCompareRows(m.id)).filter((r) => !r.excluded)] as const)));
+
   return (
     <div className="mx-auto max-w-[880px] px-5 pt-16">
       <h1 className="text-[32px] font-semibold tracking-[-0.03em]">按模型比价</h1>
@@ -17,24 +22,25 @@ export default function ModelsPage() {
           <section key={f.id}>
             <h2 className="text-[13px] font-medium text-fg-3">{f.label}</h2>
             <ul className="card mt-3 divide-y divide-line overflow-hidden">
-              {MODELS.filter((m) => m.family === f.id).map((m) => {
-                const rows = compareRows(m.id).filter((r) => !r.excluded);
-                const cheapest = Math.min(...rows.map((r) => r.output));
-                return (
-                  <li key={m.id}>
-                    <Link href={`/models/${m.id}`} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-6 px-4 py-3.5 transition-colors hover:bg-subtle">
-                      <span className="min-w-0">
-                        <span className="font-medium">{m.id}</span>
-                        <span className="tnum ml-3 text-[13px] text-fg-3">
-                          官方 ${m.input} / ${m.output}
+              {models
+                .filter((m) => m.family === f.id)
+                .map((m) => {
+                  const rows = rowsOf.get(m.id) ?? [];
+                  return (
+                    <li key={m.id}>
+                      <Link href={`/models/${m.id}`} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-6 px-4 py-3.5 transition-colors hover:bg-subtle">
+                        <span className="min-w-0">
+                          <span className="font-medium">{m.id}</span>
+                          <span className="tnum ml-3 text-[13px] text-fg-3">
+                            官方 ${m.input} / ${m.output}
+                          </span>
                         </span>
-                      </span>
-                      <span className="tnum text-[13px] text-fg-3">{rows.length} 份</span>
-                      <span className="tnum w-24 text-right font-medium">{rows.length ? `${yuan(cheapest)} 起` : "—"}</span>
-                    </Link>
-                  </li>
-                );
-              })}
+                        <span className="tnum text-[13px] text-fg-3">{rows.length} 份</span>
+                        <span className="tnum w-24 text-right font-medium">{rows.length ? `${yuan(Math.min(...rows.map((r) => r.output)))} 起` : "—"}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
             </ul>
           </section>
         ))}

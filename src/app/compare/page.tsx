@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { channelOf, OFFERINGS } from "@/lib/data";
 import { ms, pct, yuan } from "@/lib/format";
 import type { Channel, Offering } from "@/lib/types";
+import { getOfferingsWithChannel, getTopOfferingIds } from "@/server/repo";
 import { CompareSync } from "@/components/compare/CompareSync";
 import { VerifyBadge } from "@/components/ui/Badges";
 
@@ -47,25 +47,22 @@ function winners(cols: Col[], best: NonNullable<Row["best"]>) {
 export default async function ComparePage(props: PageProps<"/compare">) {
   const { ids } = await props.searchParams;
   const requested = (Array.isArray(ids) ? ids.join(",") : (ids ?? "")).split(",").filter(Boolean);
-  const cols: Col[] = requested
-    .map((id) => OFFERINGS.find((o) => o.id === id))
-    .filter((o): o is Offering => Boolean(o))
-    .slice(0, 4)
-    .map((o) => ({ o, ch: channelOf(o) }));
+  const cols: Col[] = (await getOfferingsWithChannel([...new Set(requested)].slice(0, 4))).map(({ o, ch }) => ({ o, ch }));
+  const entries = cols.map(({ o, ch }) => ({ id: o.id, channel: ch.name, group: o.group }));
   const without = (id: string) => `/compare?ids=${cols.filter((c) => c.o.id !== id).map((c) => c.o.id).join(",")}`;
 
   if (cols.length < 2) {
-    const top = [...OFFERINGS].filter((o) => !o.probe.excludedReason).sort((a, b) => b.score - a.score).slice(0, 3);
+    const top = await getTopOfferingIds(3);
     return (
       <div className="mx-auto max-w-[560px] px-5 py-32 text-center">
-        <CompareSync ids={cols.map((c) => c.o.id)} />
+        <CompareSync entries={entries} />
         <h1 className="text-[28px] font-semibold tracking-[-0.03em]">至少选择 2 份货</h1>
         <p className="mt-3 text-fg-2">在列表中点 + 加入对比，最多 4 份。</p>
         <div className="mt-8 flex justify-center gap-2">
           <Link href="/" className="btn btn-secondary">
             去挑选
           </Link>
-          <Link href={`/compare?ids=${top.map((o) => o.id).join(",")}`} className="btn btn-primary">
+          <Link href={`/compare?ids=${top.join(",")}`} className="btn btn-primary">
             对比前 3 名
           </Link>
         </div>
@@ -77,7 +74,7 @@ export default async function ComparePage(props: PageProps<"/compare">) {
 
   return (
     <div className="mx-auto max-w-[1120px] px-5 pt-12">
-      <CompareSync ids={cols.map((c) => c.o.id)} />
+      <CompareSync entries={entries} />
       <Link href="/" className="text-[13px] text-fg-3 hover:text-fg">
         ← 下游货
       </Link>

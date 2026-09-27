@@ -48,6 +48,8 @@ export interface ProbeSummary {
   p95: number | null;
   tps: number;
   curve: CurvePoint[];
+  /** 24 小时 72 格探测条，编码见 lib/probe.ts 的 encodeBars */
+  bars?: number[];
   daily: DailyUptime[];
   incidents: Incident[];
 }

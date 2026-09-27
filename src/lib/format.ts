@@ -1,4 +1,4 @@
-import { DAY, HOUR, MINUTE, NOW } from "./probe";
+import { DAY, HOUR, MINUTE } from "./probe";
 
 /** 官方美元价折算人民币时使用的参考汇率 */
 export const FX = 7.2;
@@ -24,8 +24,9 @@ export function discount(cnyPerUsd: number): string {
   return `${fold < 0.1 ? fold.toFixed(2) : fold < 1 ? fold.toFixed(2) : fold.toFixed(1)} 折`;
 }
 
-export function ago(iso: string): string {
-  const diff = NOW - Date.parse(iso);
+/** 只在服务端调用，客户端组件应接收已格式化的字符串，避免 hydration 时间差 */
+export function ago(iso: string, now = Date.now()): string {
+  const diff = now - Date.parse(iso);
   if (diff < HOUR) return `${Math.max(1, Math.round(diff / MINUTE))} 分钟前`;
   if (diff < DAY) return `${Math.round(diff / HOUR)} 小时前`;
   if (diff < 30 * DAY) return `${Math.round(diff / DAY)} 天前`;

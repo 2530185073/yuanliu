@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { getChannel } from "@/lib/data";
-import { getSupplier, SUPPLY_ITEMS, WANTED_POSTS } from "@/lib/supply";
+import { connection } from "next/server";
+import { familyLabel } from "@/lib/catalog";
+import { ago } from "@/lib/format";
+import { listSupply, listWanted } from "@/server/supply-repo";
 import { ProtoModal } from "@/components/ui/Proto";
 import { SupplyBoard } from "./SupplyBoard";
 
@@ -19,9 +21,9 @@ function FormFields({ fields }: { fields: string[] }) {
   );
 }
 
-export default function SupplyPage() {
-  const supplies = SUPPLY_ITEMS.map((item) => ({ item, supplier: getSupplier(item.supplierId)! }));
-  const wanted = WANTED_POSTS.map((post) => ({ post, authorName: getChannel(post.authorSlug)?.name ?? "某中转站" }));
+export default async function SupplyPage() {
+  await connection();
+  const [supplies, wanted] = await Promise.all([listSupply(), listWanted()]);
 
   return (
     <div className="mx-auto max-w-[1120px] px-5 pt-16">
@@ -39,7 +41,29 @@ export default function SupplyPage() {
           </ProtoModal>
         </div>
       </div>
-      <SupplyBoard supplies={supplies} wanted={wanted} />
+      <SupplyBoard
+        supplies={supplies.map(({ item, supplier }) => ({
+          id: item.id,
+          title: item.title,
+          family: item.family,
+          supplierName: supplier.name,
+          verified: supplier.verified,
+          sourceType: item.sourceType,
+          cnyPerUsd: item.cnyPerUsd,
+          terms: `${item.settlement} · ${item.minOrder}`,
+          d7: item.probe?.d7 ?? null,
+          verify: item.verification?.status ?? null,
+        }))}
+        wanted={wanted.map(({ post, authorName, responses }) => ({
+          id: post.id,
+          title: post.title,
+          family: post.family,
+          meta: `${authorName} · ${familyLabel(post.family)} · ${ago(post.postedAt.toISOString())}`,
+          target: post.target,
+          responses,
+          status: post.status,
+        }))}
+      />
       <p className="mt-4 text-[13px] text-fg-3">平台只做撮合，不经手资金。</p>
     </div>
   );

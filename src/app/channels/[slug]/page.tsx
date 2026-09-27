@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CHANNELS, getChannel } from "@/lib/data";
 import { ago, duration, ms, pct, stamp, yuan } from "@/lib/format";
 import { ERROR_LABEL } from "@/lib/probe";
 import { hash } from "@/lib/rand";
+import { getChannelView } from "@/server/repo";
 import { LatencyChart } from "@/components/charts/LatencyChart";
 import { UptimeHeatmap } from "@/components/charts/UptimeHeatmap";
 import { CheckMatrix } from "@/components/offer/CheckMatrix";
@@ -13,13 +13,9 @@ import { ProtoButton, ProtoModal } from "@/components/ui/Proto";
 import { Tabs } from "@/components/ui/Tabs";
 import { OfferingBlock } from "./OfferingBlock";
 
-export function generateStaticParams() {
-  return CHANNELS.map((c) => ({ slug: c.slug }));
-}
-
 export async function generateMetadata(props: PageProps<"/channels/[slug]">) {
   const { slug } = await props.params;
-  return { title: getChannel(slug)?.name ?? "渠道不存在" };
+  return { title: (await getChannelView(slug))?.name ?? "渠道不存在" };
 }
 
 const TABS = [
@@ -31,8 +27,8 @@ const TABS = [
 
 export default async function ChannelPage(props: PageProps<"/channels/[slug]">) {
   const [{ slug }, sp] = await Promise.all([props.params, props.searchParams]);
-  const ch = getChannel(slug);
-  if (!ch) notFound();
+  const ch = await getChannelView(slug);
+  if (!ch || !ch.offerings.length) notFound();
   const initialTab = Math.max(0, TABS.findIndex((t) => t.key === sp.tab));
 
   const offerings = [...ch.offerings].sort((a, b) => b.score - a.score);

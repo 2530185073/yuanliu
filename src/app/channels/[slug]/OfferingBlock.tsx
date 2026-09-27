@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { channelOf, offeringsForSupply } from "@/lib/data";
 import { ms, pct, yuan } from "@/lib/format";
 import { encodeBars } from "@/lib/probe";
 import type { Channel, Offering } from "@/lib/types";
+import { getPeerOfferings } from "@/server/repo";
 import { CompareToggle } from "@/components/compare/CompareToggle";
 import { availabilityTone, latencyTone, VerifyBadge } from "@/components/ui/Badges";
 import { UptimeBars } from "@/components/ui/UptimeBars";
 
-export function OfferingBlock({ offering: o, channel }: { offering: Offering; channel: Channel }) {
-  const peers = o.cluster ? offeringsForSupply(o.cluster.supplyId).filter((p) => p.id !== o.id) : [];
+export async function OfferingBlock({ offering: o, channel }: { offering: Offering; channel: Channel }) {
+  const peers = o.cluster ? await getPeerOfferings(o.id, o.cluster.supplyId) : [];
   const risks = o.risks.filter((r) => !/密钥|配置/.test(r));
 
   return (
@@ -26,7 +26,7 @@ export function OfferingBlock({ offering: o, channel }: { offering: Offering; ch
             {yuan(o.daoPrice)}
             <span className="ml-0.5 text-[13px] font-normal text-fg-3">/刀</span>
           </p>
-          <CompareToggle id={o.id} label />
+          <CompareToggle entry={{ id: o.id, channel: channel.name, group: o.group }} label />
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export function OfferingBlock({ offering: o, channel }: { offering: Offering; ch
         <span className="tnum w-16 shrink-0 text-[13px]" style={{ color: availabilityTone(o.probe.excludedReason ? null : o.probe.h24) }}>
           {o.probe.excludedReason ? "暂停计入" : pct(o.probe.h24)}
         </span>
-        <UptimeBars bars={encodeBars(o.probe.curve)} height={16} />
+        <UptimeBars bars={o.probe.bars?.length ? o.probe.bars : encodeBars(o.probe.curve)} height={16} />
         <VerifyBadge status={o.verification.status} stale={o.verification.stale} />
       </div>
 
@@ -90,7 +90,7 @@ export function OfferingBlock({ offering: o, channel }: { offering: Offering; ch
             <span>
               与{" "}
               <Link href={`/channels/${peers[0].channelSlug}#${peers[0].id}`} className="link">
-                {channelOf(peers[0]).name}
+                {peers[0].channelName}
               </Link>
               {peers.length > 1 && ` 等 ${peers.length} 份货`}疑似同源。
             </span>

@@ -73,7 +73,7 @@ export function CompareBoard({ rows, officialCny }: { rows: ModelCompareRow[]; o
                     <VerifyBadge status={r.verify} />
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <CompareToggle id={r.id} />
+                    <CompareToggle entry={{ id: r.id, channel: r.channelName, group: r.group }} />
                   </td>
                 </tr>
               ))}

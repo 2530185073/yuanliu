@@ -66,7 +66,7 @@ export function OfferingRow({ item }: { item: OfferingListItem }) {
         <VerifyBadge status={item.verify} stale={Boolean(item.excludedReason)} />
         <span className="tnum hidden text-right text-[13px] text-fg-2 md:block">{item.score}</span>
         <span className="ml-auto md:ml-0">
-          <CompareToggle id={item.id} />
+          <CompareToggle entry={{ id: item.id, channel: item.channelName, group: item.group }} />
         </span>
       </div>
     </div>

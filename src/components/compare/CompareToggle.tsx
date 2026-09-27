@@ -1,15 +1,15 @@
 "use client";
 
-import { useCompare } from "./store";
+import { useCompare, type CompareEntry } from "./store";
 
-export function CompareToggle({ id, label = false }: { id: string; label?: boolean }) {
+export function CompareToggle({ entry, label = false }: { entry: CompareEntry; label?: boolean }) {
   const { has, toggle, full } = useCompare();
-  const on = has(id);
+  const on = has(entry.id);
   const disabled = !on && full;
   return (
     <button
       type="button"
-      onClick={() => toggle(id)}
+      onClick={() => toggle(entry)}
       disabled={disabled}
       aria-pressed={on}
       aria-label={on ? "移出对比" : "加入对比"}

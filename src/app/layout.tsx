@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { CompareTray } from "@/components/compare/CompareTray";
 import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SiteHeader } from "@/components/shell/SiteHeader";
-import { channelOf, OFFERINGS } from "@/lib/data";
 import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
@@ -14,8 +13,6 @@ export const metadata: Metadata = {
   description: "收录各渠道的 AI 中转货源，统一口径比价，持续探测与验真。",
 };
 
-const COMPARE_LABELS = Object.fromEntries(OFFERINGS.map((o) => [o.id, { channel: channelOf(o).name, group: o.group }]));
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="zh-CN" className={`${geist.variable} ${geistMono.variable} h-full`}>
@@ -23,7 +20,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
-        <CompareTray labels={COMPARE_LABELS} />
+        <CompareTray />
       </body>
     </html>
   );

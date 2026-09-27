@@ -1,15 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getModel, hasModel, MODELS } from "@/lib/catalog";
-import { compareRows } from "@/lib/data";
+import { connection } from "next/server";
 import { FX, yuan } from "@/lib/format";
 import { percentile } from "@/lib/probe";
+import { getCompareRows, getModels } from "@/server/repo";
 import { Stat } from "@/components/ui/Badges";
 import { CompareBoard } from "./CompareBoard";
-
-export function generateStaticParams() {
-  return MODELS.map((m) => ({ id: m.id }));
-}
 
 export async function generateMetadata(props: PageProps<"/models/[id]">) {
   const { id } = await props.params;
@@ -17,10 +13,11 @@ export async function generateMetadata(props: PageProps<"/models/[id]">) {
 }
 
 export default async function ModelPage(props: PageProps<"/models/[id]">) {
+  await connection();
   const { id } = await props.params;
-  if (!hasModel(id)) notFound();
-  const model = getModel(id);
-  const rows = compareRows(id);
+  const model = (await getModels()).find((m) => m.id === id);
+  if (!model) notFound();
+  const rows = await getCompareRows(id);
   const live = rows.filter((r) => !r.excluded);
   const official = model.output * FX;
 
@@ -37,11 +34,11 @@ export default async function ModelPage(props: PageProps<"/models/[id]">) {
       <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
         <Stat label="在售" value={`${live.length} 份`} />
         <Stat label="最低输出价" value={live.length ? yuan(Math.min(...live.map((r) => r.output))) : "—"} />
-        <Stat label="中位输出价" value={yuan(percentile(live.map((r) => r.output), 50) ?? 0)} />
+        <Stat label="中位输出价" value={live.length ? yuan(percentile(live.map((r) => r.output), 50) ?? 0) : "—"} />
         <Stat label="官方输出价" value={yuan(official)} />
       </div>
 
-      {live.length ? <CompareBoard rows={rows} officialCny={official} /> : <p className="mt-10 text-fg-3">暂无在售的货</p>}
+      {live.length ? <CompareBoard rows={live} officialCny={official} /> : <p className="mt-10 text-fg-3">暂无在售的货</p>}
     </div>
   );
 }

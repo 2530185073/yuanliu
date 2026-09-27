@@ -3,20 +3,29 @@
 import { useSyncExternalStore } from "react";
 
 export const MAX_COMPARE = 4;
-const KEY = "yuanliu:compare";
-const EMPTY: string[] = [];
+const KEY = "yuanliu:compare:v2";
 const listeners = new Set<() => void>();
 
-let lastRaw: string | null = null;
-let cached: string[] = EMPTY;
+export interface CompareEntry {
+  id: string;
+  channel: string;
+  group: string;
+}
 
-function getSnapshot(): string[] {
+const EMPTY: CompareEntry[] = [];
+let lastRaw: string | null = null;
+let cached: CompareEntry[] = EMPTY;
+
+const isEntry = (v: unknown): v is CompareEntry =>
+  typeof v === "object" && v !== null && typeof (v as CompareEntry).id === "string" && typeof (v as CompareEntry).channel === "string";
+
+function getSnapshot(): CompareEntry[] {
   const raw = localStorage.getItem(KEY);
   if (raw !== lastRaw) {
     lastRaw = raw;
     try {
       const parsed = JSON.parse(raw ?? "[]");
-      cached = Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === "string").slice(0, MAX_COMPARE) : EMPTY;
+      cached = Array.isArray(parsed) ? parsed.filter(isEntry).slice(0, MAX_COMPARE) : EMPTY;
     } catch {
       cached = EMPTY;
     }
@@ -33,24 +42,25 @@ function subscribe(callback: () => void) {
   };
 }
 
-function write(ids: string[]) {
-  localStorage.setItem(KEY, JSON.stringify(ids));
+function write(entries: CompareEntry[]) {
+  localStorage.setItem(KEY, JSON.stringify(entries.slice(0, MAX_COMPARE)));
   listeners.forEach((l) => l());
 }
 
-export function replaceCompare(ids: string[]) {
-  const next = ids.slice(0, MAX_COMPARE);
-  if (JSON.stringify(next) !== localStorage.getItem(KEY)) write(next);
+export function replaceCompare(entries: CompareEntry[]) {
+  if (JSON.stringify(entries.slice(0, MAX_COMPARE)) !== localStorage.getItem(KEY)) write(entries);
 }
 
 export function useCompare() {
-  const ids = useSyncExternalStore(subscribe, getSnapshot, () => EMPTY);
+  const entries = useSyncExternalStore(subscribe, getSnapshot, () => EMPTY);
+  const has = (id: string) => entries.some((e) => e.id === id);
   return {
-    ids,
-    full: ids.length >= MAX_COMPARE,
-    has: (id: string) => ids.includes(id),
-    toggle: (id: string) => write(ids.includes(id) ? ids.filter((x) => x !== id) : ids.length >= MAX_COMPARE ? ids : [...ids, id]),
-    remove: (id: string) => write(ids.filter((x) => x !== id)),
+    entries,
+    full: entries.length >= MAX_COMPARE,
+    has,
+    toggle: (entry: CompareEntry) =>
+      write(has(entry.id) ? entries.filter((e) => e.id !== entry.id) : entries.length >= MAX_COMPARE ? entries : [...entries, entry]),
+    remove: (id: string) => write(entries.filter((e) => e.id !== id)),
     clear: () => write([]),
   };
 }
