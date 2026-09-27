@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鹈鹕骑自行车</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #d9f0f0; color: #24474a; font-family: system-ui, sans-serif; }
+  main { min-height: 100svh; display: grid; place-items: center; position: relative; overflow: hidden; }
+  svg { display: block; width: 100%; max-height: 100svh; aspect-ratio: 1000 / 700; }
+  button { position: absolute; bottom: 24px; right: 24px; width: 48px; height: 48px; border: 1px solid #24474a; border-radius: 50%; background: #fff; color: inherit; cursor: pointer; font-size: 20px; }
+  button:focus-visible { outline: 3px solid #e76655; outline-offset: 4px; }
+  .wheel { animation: spin 1s linear infinite; transform-box: fill-box; transform-origin: center; }
+  .rider { animation: bob 1s ease-in-out infinite; }
+  .scenery { animation: travel 3s linear infinite; }
+  .cloud { animation: drift 12s ease-in-out infinite alternate; }
+  .paused * { animation-play-state: paused !important; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes bob { 50% { transform: translateY(4px) rotate(.5deg); } }
+  @keyframes travel { to { transform: translateX(-250px); } }
+  @keyframes drift { to { transform: translateX(-35px); } }
+</style>
+</head>
+<body>
+<main>
+<svg id="scene" viewBox="0 0 1000 700" role="img" aria-labelledby="title desc">
+  <title id="title">鹈鹕骑自行车</title>
+  <desc id="desc">一只长嘴白鹈鹕骑着珊瑚红自行车，沿着海边轻快前进。</desc>
+  <defs>
+    <g id="wheel" fill="none">
+      <circle r="89" stroke="#24474a" stroke-width="12"/>
+      <circle r="79" stroke="#fffaf0" stroke-width="4"/>
+      <g stroke="#779c9b" stroke-width="2">
+        <path d="M-76 0H76M0-76V76M-54-54L54 54M-54 54L54-54"/>
+      </g>
+      <circle r="9" fill="#24474a"/>
+    </g>
+    <g id="cloud" fill="#fff" opacity=".85">
+      <rect x="-55" y="0" width="130" height="25" rx="12"/>
+      <ellipse cx="-10" cy="0" rx="28" ry="25"/>
+      <ellipse cx="25" cy="-7" rx="32" ry="30"/>
+    </g>
+  </defs>
+  <rect width="1000" height="700" fill="#d9f0f0"/>
+  <circle cx="805" cy="125" r="49" fill="#f6ce68"/>
+  <g class="cloud"><use href="#cloud" x="175" y="145"/><use href="#cloud" x="570" y="90"/></g>
+  <path d="M0 397Q130 365 265 395T540 390T810 389T1080 387V570H0Z" fill="#94c8bc"/>
+  <path d="M0 435Q170 407 355 438T700 434T1050 433V570H0Z" fill="#65aaa1"/>
+  <path d="M0 485Q280 460 520 490T1000 476V700H0Z" fill="#f4f2e9"/>
+  <path d="M0 584H1000" stroke="#c8d6ca" stroke-width="3"/>
+  <g class="scenery" stroke="#b4c9be" stroke-width="4" stroke-linecap="round">
+    <path d="M0 624h52m198 0h52m198 0h52m198 0h52m198 0h52m198 0h52"/>
+    <path d="M110 553h20m230 0h20m230 0h20m230 0h20m230 0h20"/>
+  </g>
+  <ellipse cx="506" cy="584" rx="245" ry="14" fill="#24474a" opacity=".1"/>
+  <!-- 轮组与车架 -->
+  <g transform="translate(350 485)"><g class="wheel"><use href="#wheel"/></g></g>
+  <g transform="translate(655 485)"><g class="wheel"><use href="#wheel"/></g></g>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M350 485L420 355L490 485ZM420 355H605L490 485M605 355L655 485"
+          stroke="#e76655" stroke-width="10"/>
+    <path d="M420 355L407 323M605 355L589 306L625 287" stroke="#24474a" stroke-width="8"/>
+    <path d="M382 323H429M616 287H638" stroke="#24474a" stroke-width="12"/>
+    <path d="M350 476L490 465Q516 485 490 505L350 494Z" stroke="#63817c" stroke-width="3"/>
+  </g>
+  <!-- 远侧腿与曲柄；脚的位置始终跟随踏板 -->
+  <path fill="none" stroke="#d89038" stroke-width="13" stroke-linecap="round">
+    <animate attributeName="d" dur="1s" repeatCount="indefinite"
+      values="M453 341L464 399L461 485;M453 341L488 398L490 456;M453 341L511 412L519 485;M453 341L480 432L490 514;M453 341L464 399L461 485"/>
+  </path>
+  <circle cx="490" cy="485" r="23" fill="#fffaf0" stroke="#24474a" stroke-width="5"/>
+  <g stroke="#24474a" stroke-width="6" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 490 485" to="360 490 485" dur="1s" repeatCount="indefinite"/>
+    <path d="M461 485H519"/>
+  </g>
+  <!-- 身体、翅膀、长颈与标志性的喉囊 -->
+  <g class="rider" stroke="#24474a" stroke-width="3" stroke-linejoin="round">
+    <path d="M390 288L337 264L356 304L330 294L367 331" fill="#fffdf5"/>
+    <path d="M378 267C417 247 464 258 489 283C511 307 489 348 451 355C400 365 366 342 358 313Z" fill="#fffdf5"/>
+    <path d="M402 286C434 273 469 287 477 313C453 341 411 333 388 311" fill="#e1e9e3"/>
+    <path d="M403 300Q430 320 456 312M408 310Q431 327 450 321" fill="none" stroke="#a6bcb5"/>
+    <path d="M468 298C500 279 477 227 499 189C514 162 550 175 556 195C565 224 533 239 532 271C532 302 513 327 483 336"
+          fill="#fffdf5"/>
+    <path d="M547 210L669 218Q610 274 550 238Z" fill="#f1b553"/>
+    <path d="M549 203L692 215Q702 218 690 224L549 225Z" fill="#f6ce68"/>
+    <path d="M554 223L673 222" fill="none" stroke="#cc8a36" stroke-width="2"/>
+    <circle cx="538" cy="197" r="5" fill="#24474a" stroke="none"/>
+    <circle cx="540" cy="195" r="1.5" fill="#fff" stroke="none"/>
+    <path d="M507 178Q516 159 522 168M517 175Q528 158 532 169" fill="none" stroke-linecap="round"/>
+    <path d="M515 269L532 274L519 290L504 284Z" fill="#e76655" stroke="none"/>
+    <path d="M514 279Q480 264 453 282L473 290L458 303Q495 291 520 287" fill="#e76655" stroke="none"/>
+    <path d="M470 300Q537 334 625 289" fill="none" stroke="#24474a" stroke-width="17" stroke-linecap="round"/>
+    <path d="M470 298Q537 332 625 287" fill="none" stroke="#fffdf5" stroke-width="11" stroke-linecap="round"/>
+  </g>
+  <path fill="none" stroke="#efb04d" stroke-width="14" stroke-linecap="round">
+    <animate attributeName="d" dur="1s" repeatCount="indefinite"
+      values="M446 345L502 401L519 485;M446 345L473 427L490 514;M446 345L439 408L461 485;M446 345L460 389L490 456;M446 345L502 401L519 485"/>
+  </path>
+  <g>
+    <animateTransform attributeName="transform" type="translate" dur="1s" repeatCount="indefinite"
+      values="519 485;490 514;461 485;490 456;519 485"/>
+    <path d="M-10-6L14-6L23 2H-11Z" fill="#efb04d" stroke="#24474a" stroke-width="2"/>
+    <path d="M-13 6H24" stroke="#24474a" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鹈鹕骑自行车</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;background:#dff3f3;font-family:system-ui,sans-serif}
+main{width:min(100%,1000px);padding:24px}h1{margin:0 0 16px;color:#244d52;font-size:26px;font-weight:650}
+svg{display:block;width:100%;height:auto;overflow:hidden;background:#eaf8fa;border-radius:8px}
+.spin{animation:spin 1.2s linear infinite}.bob{animation:bob .6s ease-in-out infinite alternate}
+.leg{animation:pedal 1.2s linear infinite}.rear{animation-delay:-.6s}
+.road{animation:road 1.2s linear infinite}.cloud{animation:cloud 22s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes bob{to{transform:translateY(-4px) rotate(-1deg)}}
+@keyframes pedal{0%,100%{transform:translate(14px,0)}25%{transform:translate(0,14px)}50%{transform:translate(-14px,0)}75%{transform:translate(0,-14px)}}
+@keyframes road{to{transform:translateX(-120px)}}@keyframes cloud{from{transform:translateX(650px)}to{transform:translateX(-650px)}}
+@media(prefers-reduced-motion:reduce){.spin,.bob,.leg,.road,.cloud{animation:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>鹈鹕的兜风时间</h1>
+<svg viewBox="0 0 900 600" role="img" aria-labelledby="title desc">
+<title id="title">鹈鹕骑着绿色自行车</title>
+<desc id="desc">白色鹈鹕踩动脚踏板，车轮不停旋转，云朵和路面向后移动。</desc>
+<defs>
+<g id="wheel" fill="none"><circle r="75" stroke="#28484d" stroke-width="10"/><circle r="65" stroke="#fff" stroke-width="3"/>
+<g stroke="#7b999c" stroke-width="2"><path d="M-64 0H64M0-64V64M-45-45L45 45M-45 45L45-45"/></g><circle r="8" fill="#28484d"/></g>
+<g id="cloud" fill="#fff"><ellipse rx="52" ry="16"/><circle cx="-20" cy="-12" r="23"/><circle cx="12" cy="-20" r="30"/></g>
+</defs>
+<circle cx="752" cy="102" r="39" fill="#f9d976"/>
+<g opacity=".9"><g transform="translate(430 120)"><g class="cloud"><use href="#cloud"/></g></g>
+<g transform="translate(200 190)"><g class="cloud" style="animation-delay:-11s"><use href="#cloud"/></g></g></g>
+<path d="M0 361Q130 273 290 357T610 339T900 356V600H0Z" fill="#b8dcd0"/>
+<path d="M0 390Q180 325 360 393T700 378T900 390V600H0Z" fill="#8fc5af"/>
+<path d="M0 471H900V600H0Z" fill="#e3e9e6"/><path d="M0 471H900" stroke="#fff" stroke-width="5"/>
+<g class="road" stroke="#fff" stroke-width="5" stroke-linecap="round"><path d="M0 544H48M120 544H168M240 544H288M360 544H408M480 544H528M600 544H648M720 544H768M840 544H888M960 544H1008"/></g>
+<ellipse cx="450" cy="483" rx="230" ry="12" fill="#28484d" opacity=".12"/>
+<g transform="translate(295 403)"><g class="spin"><use href="#wheel"/></g></g>
+<g transform="translate(601 403)"><g class="spin"><use href="#wheel"/></g></g>
+<g fill="none" stroke="#228c76" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+<path d="M295 403L365 282L438 403ZM365 282H556L438 403M601 403L548 259"/>
+<path d="M438 403L356 265"/></g>
+<path d="M335 264H382" stroke="#28484d" stroke-width="13" stroke-linecap="round"/>
+<path d="M548 259L536 230H566Q584 230 580 247" fill="none" stroke="#28484d" stroke-width="8" stroke-linecap="round"/>
+<g transform="translate(438 403)"><g class="spin" stroke="#526f71" stroke-width="5"><path d="M-14 0H14"/><circle r="9" fill="#e8eeee"/></g></g>
+<g stroke="#d99135" stroke-width="9" stroke-linecap="round" fill="none">
+<g class="leg rear"><path d="M405 265L391 331L438 403"/><path d="M425 406H448" stroke="#28484d" stroke-width="6"/></g></g>
+<g class="bob" style="transform-origin:405px 270px">
+<path d="M355 230L294 200L321 248L299 242Q328 280 373 275" fill="#fff" stroke="#31575b" stroke-width="4" stroke-linejoin="round"/>
+<path d="M350 202Q386 174 432 215Q459 231 468 179L475 128Q481 91 512 107Q540 124 520 157L504 221Q491 283 426 293Q370 299 345 261Q328 230 350 202Z" fill="#fffdf5" stroke="#31575b" stroke-width="4"/>
+<path d="M515 142L631 155Q602 201 526 174Z" fill="#f4bf58" stroke="#31575b" stroke-width="4" stroke-linejoin="round"/>
+<path d="M513 139L642 153L519 156" fill="#f3a64b" stroke="#31575b" stroke-width="4" stroke-linejoin="round"/>
+<circle cx="509" cy="128" r="5" fill="#243f44"/><circle cx="510" cy="126" r="1.5" fill="#fff"/>
+<path d="M368 220Q411 208 437 245L548 238Q559 242 550 250L432 266Q394 270 371 240" fill="#e5efec" stroke="#31575b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M481 107Q494 93 508 102" fill="none" stroke="#31575b" stroke-width="4" stroke-linecap="round"/>
+</g>
+<g class="leg" stroke="#e5a33d" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M424 283L466 336L438 403"/><path d="M436 403L454 409L429 409" fill="#f4bf58"/><path d="M426 414H452" stroke="#28484d" stroke-width="6"/></g>
+</svg>
+</main>
+</body>
+</html>

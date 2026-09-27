@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>骑自行车的鹈鹕</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #dceef0;
+    }
+    svg {
+      display: block;
+      width: min(100vw, 1100px);
+      height: auto;
+    }
+    .cloud-slow { animation: drift 24s linear infinite; }
+    .cloud-fast { animation: drift 17s linear infinite; }
+    .road-lines { animation: roll 1.4s linear infinite; }
+    .pelican { animation: bob .48s ease-in-out infinite alternate; }
+    .wing { transform-origin: 420px 258px; animation: wing .9s ease-in-out infinite alternate; }
+
+    @keyframes drift {
+      from { transform: translateX(100px); }
+      to   { transform: translateX(-1100px); }
+    }
+    @keyframes roll {
+      to { transform: translateX(-140px); }
+    }
+    @keyframes bob {
+      to { transform: translateY(-4px); }
+    }
+    @keyframes wing {
+      to { transform: rotate(-7deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cloud-slow, .cloud-fast, .road-lines, .pelican, .wing {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 1000 600" role="img" aria-labelledby="title desc" xmlns="http://www.w3.org/2000/svg">
+    <title id="title">鹈鹕骑自行车</title>
+    <desc id="desc">一只白色鹈鹕骑着蓝绿色自行车，在晴朗的乡间道路上前进。车轮、脚踏板和背景持续运动。</desc>
+
+    <defs>
+      <linearGradient id="sky" x2="0" y2="1">
+        <stop stop-color="#a7dfe8"/>
+        <stop offset="1" stop-color="#e9f5df"/>
+      </linearGradient>
+      <linearGradient id="pouch" x2="0" y2="1">
+        <stop stop-color="#ffd886"/>
+        <stop offset="1" stop-color="#f4a75f"/>
+      </linearGradient>
+      <clipPath id="scene">
+        <rect width="1000" height="600" rx="24"/>
+      </clipPath>
+      <g id="cloud" fill="#fff" opacity=".83">
+        <ellipse cx="0" cy="0" rx="53" ry="17"/>
+        <circle cx="-25" cy="-13" r="21"/>
+        <circle cx="8" cy="-23" r="27"/>
+        <circle cx="37" cy="-9" r="19"/>
+      </g>
+      <g id="wheel">
+        <circle r="89" fill="none" stroke="#304958" stroke-width="13"/>
+        <circle r="89" fill="none" stroke="#e9f7f3" stroke-width="3"/>
+        <g class="spokes" stroke="#7296a0" stroke-width="2">
+          <path d="M-89 0H89 M0-89V89 M-63-63 63 63 M-63 63 63-63
+                   M-82-34 82 34 M-82 34 82-34 M-34-82 34 82 M-34 82 34-82"/>
+        </g>
+        <circle r="12" fill="#f7c16f" stroke="#304958" stroke-width="5"/>
+      </g>
+    </defs>
+
+    <g clip-path="url(#scene)">
+      <!-- 风景 -->
+      <rect width="1000" height="600" fill="url(#sky)"/>
+      <circle cx="828" cy="112" r="58" fill="#fff3b6" opacity=".9"/>
+      <g class="cloud-slow"><use href="#cloud" x="270" y="113"/><use href="#cloud" x="940" y="154"/></g>
+      <g class="cloud-fast"><use href="#cloud" x="690" y="82"/><use href="#cloud" x="1330" y="122"/></g>
+
+      <path d="M0 374 Q155 307 329 379 T687 363 T1000 365 V495 H0Z" fill="#bdd9b7"/>
+      <path d="M0 410 Q235 357 471 407 T1000 396 V502 H0Z" fill="#91c7a5"/>
+      <path d="M0 448 Q260 421 511 450 T1000 440 V500 H0Z" fill="#73ae91"/>
+      <path d="M0 461 H1000 V600 H0Z" fill="#edcc9d"/>
+      <path d="M0 481 H1000" stroke="#fff5d9" stroke-width="5" opacity=".8"/>
+      <g class="road-lines" fill="#fff5d9" opacity=".8">
+        <rect x="-100" y="544" width="77" height="6" rx="3"/>
+        <rect x="40" y="544" width="77" height="6" rx="3"/>
+        <rect x="180" y="544" width="77" height="6" rx="3"/>
+        <rect x="320" y="544" width="77" height="6" rx="3"/>
+        <rect x="460" y="544" width="77" height="6" rx="3"/>
+        <rect x="600" y="544" width="77" height="6" rx="3"/>
+        <rect x="740" y="544" width="77" height="6" rx="3"/>
+        <rect x="880" y="544" width="77" height="6" rx="3"/>
+        <rect x="1020" y="544" width="77" height="6" rx="3"/>
+      </g>
+
+      <!-- 车轮 -->
+      <use href="#wheel" x="320" y="440"/>
+      <use href="#wheel" x="665" y="440"/>
+
+      <!-- 自行车 -->
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M320 440 445 326 477 440 320 440
+                 M445 326 587 333 477 440
+                 M587 333 665 440"
+              stroke="#276e77" stroke-width="11"/>
+        <path d="M445 326 477 440 M587 333 665 440"
+              stroke="#58b5aa" stroke-width="4"/>
+        <path d="M587 333 610 299 652 307" stroke="#304958" stroke-width="9"/>
+        <path d="M641 306q17-1 19 13" stroke="#304958" stroke-width="8"/>
+        <path d="M445 326 438 307" stroke="#304958" stroke-width="8"/>
+        <path d="M410 307h65" stroke="#304958" stroke-width="13"/>
+        <path d="M410 307h65" stroke="#53616a" stroke-width="5"/>
+      </g>
+      <circle cx="477" cy="440" r="21" fill="#f4c571" stroke="#304958" stroke-width="6"/>
+      <g id="crank" stroke="#304958" stroke-width="7" stroke-linecap="round">
+        <path id="crank-arm" d="M477 440 477 477 M477 440 477 403"/>
+      </g>
+
+      <!-- 鹈鹕：后腿、身体、翅膀 -->
+      <g class="pelican">
+        <path id="back-leg" d="M435 291 Q471 345 465 366 L477 403"
+              fill="none" stroke="#db874b" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- 尾羽 -->
+        <path d="M358 269q-39-6-64-29 9 34 51 49
+                 q-40 2-62-9 21 31 72 29Z"
+              fill="#e9eee7" stroke="#899fa1" stroke-width="3"/>
+
+        <!-- 身体和长脖子 -->
+        <path d="M369 231q28-32 84-26 29 2 49 25
+                 15-27 13-70-2-52 32-65
+                 22-10 43 3 19 13 17 39
+                 -2 18-19 23-31 11
+                 -19 10-18 39-16 65-44 99
+                 -29 34-99 29-46-2-74-35
+                 -18-22-11-59Z"
+              fill="#fffdf3" stroke="#8da1a0" stroke-width="4" stroke-linejoin="round"/>
+
+        <!-- 喉囊与长喙 -->
+        <path d="M594 158 Q662 169 754 168
+                 Q716 179 690 217
+                 Q665 250 623 227
+                 Q601 213 594 178Z"
+              fill="url(#pouch)" stroke="#c98651" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M592 151 Q666 155 759 167
+                 Q676 177 592 174Z"
+              fill="#f8c46e" stroke="#a9794a" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M600 177 Q655 184 708 175" fill="none" stroke="#dc9655" stroke-width="2" opacity=".7"/>
+
+        <!-- 眼睛 -->
+        <circle cx="579" cy="130" r="9" fill="#fff"/>
+        <circle cx="582" cy="130" r="4.5" fill="#303b42"/>
+        <circle cx="583.5" cy="128.5" r="1.5" fill="#fff"/>
+        <path d="M568 116q12-8 23-1" fill="none" stroke="#8da1a0" stroke-width="3" stroke-linecap="round"/>
+
+        <!-- 翅膀 -->
+        <g class="wing">
+          <path d="M387 223q48-25 93 9 17 14 9 37
+                   -8 24-51 35-42 8-71-17
+                   -17-17-11-37 5-17 31-27Z"
+                fill="#e7efea" stroke="#8da1a0" stroke-width="4"/>
+          <path d="M377 273q39 33 91 7 M395 286q31 15 58 6"
+                fill="none" stroke="#b1c5bd" stroke-width="3" stroke-linecap="round"/>
+        </g>
+
+        <!-- 前腿 -->
+        <path id="front-leg" d="M457 297 Q511 350 500 372 L477 477"
+              fill="none" stroke="#e99a55" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="457" cy="298" r="10" fill="#e99a55"/>
+
+        <!-- 两只踩在踏板上的脚 -->
+        <g id="back-foot">
+          <path d="M-10-3q18-5 32 2 6 4 2 10h-37q-5-5 3-12Z"
+                fill="#df9453" stroke="#a76c43" stroke-width="2"/>
+          <path d="M-18 11h44" stroke="#304958" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <g id="front-foot">
+          <path d="M-10-5q21-5 36 3 7 5 2 11h-43q-6-6 5-14Z"
+                fill="#e99a55" stroke="#a76c43" stroke-width="2"/>
+          <path d="M-19 11h48" stroke="#304958" stroke-width="7" stroke-linecap="round"/>
+        </g>
+      </g>
+
+      <!-- 小小的迎风线 -->
+      <g fill="none" stroke="#fffdf0" stroke-width="4" stroke-linecap="round" opacity=".75">
+        <path d="M796 234h55"/>
+        <path d="M816 254h34"/>
+        <path d="M777 275h62"/>
+      </g>
+    </g>
+  </svg>
+
+  
+</body>
+</html>

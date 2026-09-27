@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f1ede3;
+  --color-paper-2: #e7e0cf;
+  --color-card: #faf8f2;
+  --color-ink: #17150f;
+  --color-ink-2: #4a463b;
+  --color-ink-3: #8a8473;
+  --color-rule: #d6cdb8;
+  --color-signal: #ff4d12;
+  --color-signal-soft: #ffe1d3;
+  --color-source: #2344d8;
+  --color-source-soft: #dfe5ff;
+  --color-ok: #137a3f;
+  --color-ok-soft: #d8efdf;
+  --color-warn: #b87a00;
+  --color-warn-soft: #f7e8c4;
+  --color-bad: #cf2e1d;
+  --color-bad-soft: #f8d9d4;
+  --color-mute: #7c808c;
+  --color-mute-soft: #e4e4e4;
+}
+
+@theme inline {
+  --font-display: var(--font-serif-sc), "Songti SC", "STSong", serif;
+  --font-sans: var(--font-latin-sans), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+html {
+  background: var(--color-paper);
+}
+
+body {
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .09 0 0 0 0 .08 0 0 0 0 .05 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(to right, rgb(23 21 15 / 0.04) 1px, transparent 1px);
+  background-size: 220px 220px, 64px 64px;
+  font-feature-settings: "tnum" 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-card);
+}
+
+@layer components {
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+.panel {
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  box-shadow: 0 1px 0 rgb(23 21 15 / 0.04), 0 12px 32px -24px rgb(23 21 15 / 0.35);
+}
+
+.hairline {
+  border-color: var(--color-rule);
+}
+
+.ruled {
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgb(23 21 15 / 0.06) 31px 32px);
+}
+
+/* 价格滚动条 */
+.ticker {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 70s linear infinite;
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* 验货印章 */
+.stamp {
+  --stamp-color: var(--color-ok);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.3em 0.7em 0.28em;
+  color: var(--stamp-color);
+  border: 2px solid currentColor;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  transform: rotate(-5deg);
+  mix-blend-mode: multiply;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  mask-size: 120px 60px;
+  white-space: nowrap;
+}
+
+.stamp-sm {
+  font-size: 11px;
+  padding: 0.28em 0.55em 0.25em;
+  outline-offset: 1.5px;
+  border-width: 1.5px;
+}
+
+/* 入场动画 */
+.rise {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-signal);
+  box-shadow: 0 0 0 0 rgb(255 77 18 / 0.6);
+  animation: pulse 1.8s ease-out infinite;
+}
+
+@keyframes pulse {
+  to {
+    box-shadow: 0 0 0 8px rgb(255 77 18 / 0);
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 30px;
+  padding: 0 0.8rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: var(--color-card);
+  font-size: 13px;
+  color: var(--color-ink-2);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.chip[data-on="true"] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-card);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 38px;
+  padding: 0 1rem;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-ink {
+  background: var(--color-ink);
+  color: var(--color-card);
+}
+
+.btn-ink:hover {
+  background: var(--color-signal);
+}
+
+.btn-line {
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+}
+
+.btn-line:hover {
+  background: var(--color-ink);
+  color: var(--color-card);
+}
+
+.btn-ghost {
+  color: var(--color-ink-2);
+}
+
+.btn-ghost:hover {
+  color: var(--color-ink);
+  background: var(--color-paper-2);
+}
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease;
+}
+
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-ink);
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.scroll-x {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track,
+  .rise,
+  .live-dot {
+    animation: none;
+  }
+}

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>鹈鹕骑自行车</title>
+  <style>
+    :root {
+      --sky: #bdeeff;
+      --sun: #ffd86b;
+      --road: #33475b;
+      --road-line: #ffe7a3;
+      --bike: #ef5964;
+      --bike-dark: #b9364b;
+      --pelican: #f5f1df;
+      --pelican-shadow: #d7d5c3;
+      --pelican-dark: #6e7787;
+      --beak: #f3a65b;
+      --beak-dark: #d47b3d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow: hidden;
+      background: var(--sky);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    .scene {
+      position: relative;
+      width: min(100vw, 1100px);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background:
+        linear-gradient(#bdeeff 0 61%, #8bd79d 61% 72%, #33475b 72% 100%);
+    }
+
+    .title {
+      position: absolute;
+      top: 24px;
+      left: 34px;
+      z-index: 10;
+      color: #28506a;
+      font-size: clamp(18px, 3vw, 32px);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .subtitle {
+      position: absolute;
+      top: 67px;
+      left: 38px;
+      z-index: 10;
+      color: #53768a;
+      font-size: clamp(10px, 1.4vw, 14px);
+      letter-spacing: 0.15em;
+    }
+
+    .sun {
+      position: absolute;
+      top: 8%;
+      right: 11%;
+      width: 95px;
+      height: 95px;
+      border-radius: 50%;
+      background: var(--sun);
+      box-shadow: 0 0 0 18px rgba(255, 216, 107, 0.15),
+        0 0 50px rgba(255, 216, 107, 0.7);
+    }
+
+    .cloud {
+      position: absolute;
+      width: 145px;
+      height: 35px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.76);
+      filter: blur(0.2px);
+      animation: cloud-float 12s ease-in-out infinite alternate;
+    }
+
+    .cloud::before,
+    .cloud::after {
+      content: "";
+      position: absolute;
+      bottom: 10px;
+      border-radius: 50%;
+      background: inherit;
+    }
+
+    .cloud::before {
+      left: 28px;
+      width: 56px;
+      height: 56px;
+    }
+
+    .cloud::after {
+      right: 25px;
+      width: 42px;
+      height: 42px;
+    }
+
+    .cloud-one {
+      top: 20%;
+      left: 12%;
+    }
+
+    .cloud-two {
+      top: 33%;
+      right: 31%;
+      transform: scale(0.65);
+      opacity: 0.55;
+      animation-delay: -4s;
+    }
+
+    .hill {
+      position: absolute;
+      bottom: 28%;
+      width: 67%;
+      height: 25%;
+      border-radius: 50% 50% 0 0;
+      background: #72c88c;
+      opacity: 0.85;
+    }
+
+    .hill-one {
+      left: -17%;
+    }
+
+    .hill-two {
+      right: -21%;
+      bottom: 25%;
+      width: 73%;
+      height: 28%;
+      background: #64bd83;
+    }
+
+    .road {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 28%;
+      background: var(--road);
+      box-shadow: inset 0 9px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .road::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: -10%;
+      width: 120%;
+      height: 8px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--road-line) 0 75px,
+        transparent 75px 145px
+      );
+      animation: road-move 1.6s linear infinite;
+      opacity: 0.85;
+    }
+
+    .road::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 15% 85%, rgba(0, 0, 0, 0.18) 0 2px, transparent 3px),
+        radial-gradient(ellipse at 70% 35%, rgba(255, 255, 255, 0.1) 0 1px, transparent 2px);
+      background-size: 120px 48px, 170px 60px;
+    }
+
+    svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .pelican-rider {
+      animation: rider-bounce 0.58s ease-in-out infinite alternate;
+      transform-origin: 50% 72%;
+    }
+
+    .wheel {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: wheel-spin 0.9s linear infinite;
+    }
+
+    .bike-frame {
+      fill: none;
+      stroke: var(--bike);
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .bike-detail {
+      fill: none;
+      stroke: var(--bike-dark);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .spokes {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.55);
+      stroke-width: 1.8;
+    }
+
+    .feather {
+      stroke: #7f8793;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .wing {
+      transform-origin: 585px 285px;
+      animation: wing-flap 1.1s ease-in-out infinite alternate;
+    }
+
+    .leg-front {
+      transform-origin: 575px 355px;
+      animation: pedal-front 0.9s linear infinite;
+    }
+
+    .leg-back {
+      transform-origin: 575px 355px;
+      animation: pedal-back 0.9s linear infinite;
+    }
+
+    .pedal {
+      transform-origin: 575px 355px;
+      animation: pedal-front 0.9s linear infinite;
+    }
+
+    .eye {
+      animation: blink 4.5s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .motion-line {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.82);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 20 18;
+      animation: dash 1.2s linear infinite;
+    }
+
+    @keyframes wheel-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rider-bounce {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes wing-flap {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(-8deg);
+      }
+    }
+
+    @keyframes pedal-front {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pedal-back {
+      from {
+        transform: rotate(180deg);
+      }
+      to {
+        transform: rotate(540deg);
+      }
+    }
+
+    @keyframes road-move {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-145px);
+      }
+    }
+
+    @keyframes cloud-float {
+      from {
+        transform: translateX(-8px);
+      }
+      to {
+        transform: translateX(18px);
+      }
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: -76px;
+      }
+    }
+
+    @keyframes blink {
+      0%,
+      44%,
+      48%,
+      100% {
+        transform: scaleY(1);
+      }
+      46% {
+        transform: scaleY(0.08);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .title {
+        top: 14px;
+        left: 18px;
+      }
+
+      .subtitle {
+        top: 47px;
+        left: 21px;
+      }
+
+      .sun {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene" aria-label="鹈鹕骑自行车的 SVG 2D 动画">
+    <div class="title">鹈鹕骑行日</div>
+    <div class="subtitle">A PELICAN ON A BICYCLE</div>
+
+    <div class="sun"></div>
+    <div class="cloud cloud-one"></div>
+    <div class="cloud cloud-two"></div>
+    <div class="hill hill-one"></div>
+    <div class="hill hill-two"></div>
+    <div class="road"></div>
+
+    <svg
+      viewBox="0 0 1100 620"
+      role="img"
+      aria-labelledby="svg-title svg-desc"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <title id="svg-title">鹈鹕骑自行车</title>
+      <desc id="svg-desc">
+        一只鹈鹕骑着红色自行车在道路上前进，车轮和鸟腿持续运动。
+      </desc>
+
+      <g class="motion-lines">
+        <path class="motion-line" d="M180 390h72" />
+        <path class="motion-line" d="M145 425h105" />
+        <path class="motion-line" d="M820 370h75" />
+      </g>
+
+      <g class="pelican-rider">
+        <!-- 自行车 -->
+        <g class="bicycle">
+          <g class="wheel" transform="translate(400 450)">
+            <circle r="82" fill="none" stroke="#edf4f5" stroke-width="8" />
+            <circle r="72" class="spokes" />
+            <path class="spokes" d="M0-72V72M-72 0H72M-51-51L51 51M51-51L-51 51" />
+            <circle r="10" fill="#ef5964" />
+          </g>
+
+          <g class="wheel" transform="translate(750 450)">
+            <circle r="82" fill="none" stroke="#edf4f5" stroke-width="8" />
+            <circle r="72" class="spokes" />
+            <path class="spokes" d="M0-72V72M-72 0H72M-51-51L51 51M51-51L-51 51" />
+            <circle r="10" fill="#ef5964" />
+          </g>
+
+          <path
+            class="bike-frame"
+            d="M400 450L505 325L610 450L400 450L575 450L750 450L700 295"
+          />
+          <path class="bike-detail" d="M700 295l35-18M700 295l-17-28" />
+          <path class="bike-detail" d="M505 325l-8-39h45" />
+          <path class="bike-detail" d="M610 450l-25 32M585 482h45" />
+          <path class="bike-detail" d="M705 295l-7-25h-40" />
+
+          <g class="pedal">
+            <circle cx="575" cy="450" r="12" fill="none" stroke="#b9364b" stroke-width="5" />
+            <path class="bike-detail" d="M575 450l-25-26M550 424h-27" />
+            <path class="bike-detail" d="M575 450l25 27M600 477h27" />
+          </g>
+        </g>
+
+        <!-- 鹈鹕身体 -->
+        <g class="pelican">
+          <ellipse
+            cx="590"
+            cy="300"
+            rx="112"
+            ry="104"
+            fill="var(--pelican)"
+            class="feather"
+          />
+          <ellipse
+            cx="610"
+            cy="345"
+            rx="74"
+            ry="43"
+            fill="var(--pelican-shadow)"
+            opacity="0.8"
+          />
+
+          <!-- 脖子 -->
+          <path
+            d="M525 270C487 226 500 157 553 131C598 110 642 134 654 177C665 220 634 254 602 274Z"
+            fill="var(--pelican)"
+            class="feather"
+          />
+          <path
+            d="M548 157C530 190 535 230 568 263"
+            fill="none"
+            stroke="#d7d5c3"
+            stroke-width="9"
+            stroke-linecap="round"
+          />
+
+          <!-- 头部 -->
+          <ellipse
+            cx="578"
+            cy="135"
+            rx="84"
+            ry="66"
+            fill="var(--pelican)"
+            class="feather"
+          />
+          <path
+            d="M529 111c22-44 85-51 118-18"
+            fill="none"
+            stroke="#6e7787"
+            stroke-width="13"
+            stroke-linecap="round"
+          />
+
+          <!-- 嘴 -->
+          <path
+            d="M535 144C480 143 407 157 332 190C395 218 482 207 552 169Z"
+            fill="var(--beak)"
+            class="feather"
+          />
+          <path
+            d="M332 190C404 183 474 181 548 163"
+            fill="none"
+            stroke="var(--beak-dark)"
+            stroke-width="5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M359 194c45 12 92 8 135-8"
+            fill="none"
+            stroke="#d47b3d"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+
+          <!-- 眼睛 -->
+          <g class="eye">
+            <circle cx="609" cy="125" r="13" fill="#ffffff" stroke="#6e7787" stroke-width="3" />
+            <circle cx="612" cy="126" r="6" fill="#263646" />
+            <circle cx="614" cy="123" r="2" fill="#ffffff" />
+          </g>
+
+          <!-- 翼 -->
+          <path
+            class="wing"
+            d="M585 268C631 247 698 265 723 310C698 330 658 331 611 309C596 300 587 284 585 268Z"
+            fill="#e4e1d0"
+            class="feather"
+          />
+          <path
+            d="M620 276c27 13 53 25 76 35M614 287c28 13 53 24 74 31M607 298c26 12 49 20 68 25"
+            fill="none"
+            stroke="#afb2ae"
+            stroke-width="4"
+            stroke-linecap="round"
+          />
+
+          <!-- 腿和脚 -->
+          <g class="leg-front">
+            <path
+              d="M575 354L578 420"
+              fill="none"
+              stroke="var(--beak)"
+              stroke-width="10"
+              stroke-linecap="round"
+            />
+            <path
+              d="M578 420l-18 20M578 420l20 18M578 420l2 24"
+              fill="none"
+              stroke="var(--beak)"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </g>
+
+          <g class="leg-back">
+            <path
+              d="M620 350L607 415"
+              fill="none"
+              stroke="var(--beak)"
+              stroke-width="10"
+              stroke-linecap="round"
+            />
+            <path
+              d="M607 415l-20 18M607 415l20 14M607 415l5 23"
+              fill="none"
+              stroke="var(--beak)"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </g>
+
+          <!-- 尾羽 -->
+          <path
+            d="M500 307c-49-10-76 10-98 42c39-11 67-4 103 16Z"
+            fill="var(--pelican-shadow)"
+            class="feather"
+          />
+          <path
+            d="M498 318c-29 2-52 13-72 31"
+            fill="none"
+            stroke="#afb2ae"
+            stroke-width="4"
+            stroke-linecap="round"
+          />
+        </g>
+      </g>
+    </svg>
+  </main>
+</body>
+</html>

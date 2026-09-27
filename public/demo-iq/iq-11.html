@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>鹈鹕骑自行车</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#cceef1}
+svg{display:block;width:min(100%,1100px);height:auto} .spin{animation:spin 1.2s linear infinite;transform-box:fill-box;transform-origin:center}
+.rider{animation:bob 1.2s ease-in-out infinite}.cloud{animation:drift 24s linear infinite}.ground{animation:road 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes bob{50%{transform:translateY(3px)}}
+@keyframes drift{from{transform:translateX(1000px)}to{transform:translateX(-420px)}}@keyframes road{to{transform:translateX(-120px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 960 640" role="img" aria-labelledby="title desc" xmlns="http://www.w3.org/2000/svg">
+<title id="title">鹈鹕骑自行车</title><desc id="desc">一只白色鹈鹕骑着红色自行车，沿着晴朗的海边小路向前行驶。</desc>
+<defs>
+<g id="cloud" fill="#fff" opacity=".85"><ellipse cx="0" cy="0" rx="65" ry="20"/><circle cx="-24" cy="-13" r="25"/><circle cx="14" cy="-22" r="33"/></g>
+<g id="wheel">
+<circle r="87" fill="#e2f4ef" stroke="#273f45" stroke-width="10"/><circle r="78" fill="none" stroke="#fff" stroke-width="3"/>
+<g class="spin" stroke="#8ba9ae" stroke-width="2"><circle r="74" fill="none" stroke="none"/><path d="M-75 0H75M0-75V75M-53-53 53 53M-53 53 53-53M-29-69 29 69M-69-29 69 29M-69 29 69-29M-29 69 29-69"/><path d="M-54-52A75 75 0 0 1-28-70" stroke="#edb947" stroke-width="5"/></g>
+<circle r="8" fill="#273f45"/>
+</g>
+</defs>
+<path fill="#cceef1" d="M0 0H960V640H0Z"/><circle cx="786" cy="111" r="47" fill="#ffda79"/>
+<g class="cloud"><use href="#cloud" x="90" y="108"/><use href="#cloud" x="550" y="155"/></g>
+<path d="M0 340Q180 290 355 334T710 325T960 334V455H0Z" fill="#91ced0"/>
+<path d="M0 376Q210 354 410 381T960 369V461H0Z" fill="#68b9ba"/>
+<path d="M0 423Q240 403 480 424T960 417V640H0Z" fill="#95bf95"/>
+<path d="M0 464H960V580H0Z" fill="#edf0dd"/><path d="M0 580H960" stroke="#77a785" stroke-width="5"/>
+<g class="ground" stroke="#bdc5ae" stroke-width="4" stroke-linecap="round"><path d="M0 546H36m84 0h36m84 0h36m84 0h36m84 0h36m84 0h36m84 0h36m84 0h36m84 0h36"/></g>
+<ellipse cx="479" cy="524" rx="260" ry="13" fill="#42665a" opacity=".13"/>
+<use href="#wheel" transform="translate(310 431)"/><use href="#wheel" transform="translate(655 431)"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M310 431 399 302 466 431H310L570 315 466 431M570 315 655 431M570 315 556 277" stroke="#b84043" stroke-width="10"/>
+<path d="M399 302 389 277M556 277 571 257 608 257" stroke="#344b50" stroke-width="8"/>
+<path d="M368 276H414M593 257H613" stroke="#253e45" stroke-width="12"/>
+<circle cx="466" cy="431" r="24" fill="#f7f5e9" stroke="#344b50" stroke-width="5"/>
+<path d="M310 423 466 408Q493 431 466 454L310 440Z" stroke="#536b6c" stroke-width="2"/>
+</g>
+<g class="rider" stroke="#344b50" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<path d="M395 256 430 336 493 431" fill="none" stroke="#d99539" stroke-width="12"><animate attributeName="d" dur="1.2s" repeatCount="indefinite" values="M395 256 430 336 493 431;M395 256 411 356 466 458;M395 256 398 332 439 431;M395 256 437 320 466 404;M395 256 430 336 493 431"/></path>
+<path d="M374 222 316 205 344 248 319 245 363 270" fill="#f5f4e8"/>
+<path d="M358 200C375 160 442 161 463 194C481 222 467 260 423 276C375 291 337 265 348 229Z" fill="#fffdf2"/>
+<path d="M433 207C465 207 462 171 459 146C452 112 466 84 493 84C518 84 532 105 526 127C521 148 501 160 499 180C497 213 486 239 460 246" fill="#fffdf2"/>
+<path d="M510 123 642 139Q576 205 519 155Z" fill="#f4c661"/>
+<path d="M515 120 652 139 518 142Z" fill="#efa744"/>
+<path d="M487 88 475 75M497 86 493 73" fill="none"/>
+<circle cx="507" cy="110" r="5" fill="#253e45" stroke="none"/><circle cx="508" cy="108" r="1.5" fill="white" stroke="none"/>
+<path d="M376 209Q413 189 438 224Q466 246 489 235L572 255Q582 261 574 269L480 254Q415 266 380 233" fill="#e2e9e4"/>
+<path d="M388 222Q414 233 440 234" fill="none" stroke="#b0c3be" stroke-width="3"/>
+<path d="M415 265 443 346 439 431" fill="none" stroke="#edaf47" stroke-width="13"><animate attributeName="d" dur="1.2s" repeatCount="indefinite" values="M415 265 443 346 439 431;M415 265 465 325 466 404;M415 265 476 347 493 431;M415 265 444 368 466 458;M415 265 443 346 439 431"/></path>
+</g>
+<g transform="translate(466 431)" stroke="#344b50" stroke-width="5"><g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite"/><path d="M-27 0H27"/><g transform="translate(-27 0)"><g><animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="1.2s" repeatCount="indefinite"/><path d="M-13 0H13" stroke-width="8"/></g></g><g transform="translate(27 0)"><g><animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="1.2s" repeatCount="indefinite"/><path d="M-13 0H13" stroke-width="8"/></g></g></g><circle r="5" fill="#f8f4e8" stroke="none"/></g>
+</svg>
+
+</body>
+</html>

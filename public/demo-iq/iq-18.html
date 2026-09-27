@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鹈鹕的骑行时光</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; }
+    body { background: #cceef0; overflow: hidden; }
+    main { width: 100%; height: 100%; display: grid; place-items: center; }
+    svg { display: block; width: 100%; height: 100%; }
+    .outline {
+      stroke: #253b42;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .spokes { stroke: #aac3c5; stroke-width: 2; }
+    .cloud { fill: #f5ffff; opacity: .85; }
+    button {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 46px;
+      height: 46px;
+      border: 1px solid #253b4230;
+      border-radius: 50%;
+      background: #ffffffdf;
+      color: #253b42;
+      font: 20px system-ui;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    button:hover { background: white; }
+    button:focus-visible { outline: 3px solid #dc654f; outline-offset: 4px; }
+    @media (max-width: 600px) {
+      button { right: 16px; bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 1000 640" role="img" aria-labelledby="title description">
+    <title id="title">鹈鹕骑自行车</title>
+    <desc id="description">
+      一只白色鹈鹕踩着珊瑚红色自行车，长长的橙色嘴巴迎着风，
+      车轮持续转动，脚蹼交替踩踏，围巾在身后飘扬。
+    </desc>
+
+    <defs>
+      <g id="cloud" class="cloud">
+        <path d="M0 31C-5 14 15 4 29 12C31-9 68-12 77 11
+                 C99 2 118 16 114 31Z"/>
+      </g>
+      <g id="wheel">
+        <circle r="84" fill="#eff9f6" fill-opacity=".55"
+                stroke="#253b42" stroke-width="12"/>
+        <circle r="75" fill="none" stroke="#ffffff" stroke-width="3"/>
+        <g class="spokes">
+          <path d="M-74 0H74M0-74V74M-52-52L52 52M-52 52L52-52
+                   M-28-68L28 68M-68-28L68 28M-68 28L68-28M-28 68L28-68"/>
+        </g>
+        <circle r="9" fill="#253b42"/>
+        <circle r="3" fill="#ffffff"/>
+        <path d="M42-57L48-49" stroke="#efad51" stroke-width="6"
+              stroke-linecap="round"/>
+      </g>
+      <g id="road-mark">
+        <path d="M0 578H86" stroke="#f8fcf3" stroke-width="5"
+              stroke-linecap="round"/>
+        <path d="M118 548H136" stroke="#659c88" stroke-width="3"
+              stroke-linecap="round"/>
+      </g>
+      <g id="grass" fill="none" stroke="#579b82" stroke-width="3"
+         stroke-linecap="round">
+        <path d="M0 0L-5-10M0 0L3-15M0 0L9-7"/>
+      </g>
+    </defs>
+
+    <!-- 天空、远山和沿途草地 -->
+    <path fill="#cceef0" d="M0 0H1000V640H0Z"/>
+    <g id="clouds">
+      <use href="#cloud" x="83" y="103"/>
+      <use href="#cloud" x="396" y="64" transform="translate(100 15) scale(.8)"/>
+      <use href="#cloud" x="815" y="137"/>
+    </g>
+    <path d="M0 375Q135 257 289 373Q450 235 623 365
+             Q810 244 1000 348V505H0Z" fill="#a5d6c6"/>
+    <path d="M0 431Q191 338 384 425Q603 329 793 413
+             Q902 371 1000 410V530H0Z" fill="#83bea4"/>
+    <path d="M0 491Q259 463 494 493Q725 472 1000 488V640H0Z"
+          fill="#b4d8aa"/>
+    <path d="M0 527H1000V617H0Z" fill="#89b3a4"/>
+    <path d="M0 528H1000" stroke="#e1eecb" stroke-width="4"/>
+
+    <g id="road">
+      <use href="#road-mark" x="-200"/>
+      <use href="#road-mark" x="0"/>
+      <use href="#road-mark" x="200"/>
+      <use href="#road-mark" x="400"/>
+      <use href="#road-mark" x="600"/>
+      <use href="#road-mark" x="800"/>
+      <use href="#road-mark" x="1000"/>
+      <use href="#road-mark" x="1200"/>
+    </g>
+    <g id="grasses">
+      <use href="#grass" x="-80" y="510"/>
+      <use href="#grass" x="130" y="505"/>
+      <use href="#grass" x="340" y="516"/>
+      <use href="#grass" x="550" y="507"/>
+      <use href="#grass" x="760" y="514"/>
+      <use href="#grass" x="970" y="503"/>
+      <use href="#grass" x="1180" y="510"/>
+    </g>
+
+    <ellipse id="shadow" cx="481" cy="547" rx="222" ry="12"
+             fill="#38695d" opacity=".16"/>
+
+    <!-- 自行车 -->
+    <g>
+      <g transform="translate(330 460)"><g id="rear-wheel"><use href="#wheel"/></g></g>
+      <g transform="translate(630 460)"><g id="front-wheel"><use href="#wheel"/></g></g>
+
+      <!-- 远侧腿和脚踏 -->
+      <path id="far-leg" class="outline" fill="none" stroke="#cb893d"/>
+      <g id="far-foot">
+        <path d="M-15-5Q-4-12 4-4L25 5Q29 10 20 11H-15Z"
+              fill="#df973c" class="outline"/>
+        <path d="M-17 16H22" stroke="#253b42" stroke-width="7"
+              stroke-linecap="round"/>
+      </g>
+
+      <path d="M330 460L414 352L470 446L330 460
+               M414 352H578L470 446M578 352L630 460"
+            fill="none" stroke="#253b42" stroke-width="13"
+            stroke-linejoin="round"/>
+      <path d="M330 460L414 352L470 446L330 460
+               M414 352H578L470 446M578 352L630 460"
+            fill="none" stroke="#e97865" stroke-width="8"
+            stroke-linejoin="round"/>
+
+      <path d="M414 354L404 329M578 352L563 302L585 291L601 299"
+            fill="none" class="outline"/>
+      <path d="M584 291L601 299" stroke="#253b42" stroke-width="10"
+            stroke-linecap="round"/>
+      <path d="M572 307Q620 321 615 376" fill="none"
+            stroke="#435c60" stroke-width="2"/>
+      <path d="M382 328Q403 320 426 328L425 335H383Z"
+            fill="#253b42" class="outline"/>
+      <path d="M330 452L470 427Q493 427 493 446Q493 465 470 465
+               L330 468Q318 460 330 452Z"
+            fill="#dce9dd" stroke="#526a68" stroke-width="3"/>
+      <circle cx="470" cy="446" r="22" fill="#f8faf0"
+              stroke="#253b42" stroke-width="4"/>
+      <circle cx="330" cy="460" r="7" fill="#253b42"/>
+      <path id="crank" stroke="#253b42" stroke-width="6"
+            stroke-linecap="round"/>
+    </g>
+
+    <!-- 身体轻轻起伏，围巾迎风摆动 -->
+    <g id="pelican">
+      <path id="scarf-tail" d="M529 267Q482 250 448 266L420 248L423 280
+                              Q480 292 533 281Z"
+            fill="#df625c" class="outline"/>
+
+      <path d="M403 293L353 268L370 311L344 303
+               Q366 339 403 345Z"
+            fill="#edf5ec" class="outline"/>
+
+      <path d="M397 290Q429 271 470 286
+               Q497 300 515 280
+               Q526 262 523 238
+               Q518 201 545 183
+               Q568 168 587 184
+               Q608 202 595 223
+               Q585 239 558 235
+               Q555 264 568 287
+               Q582 316 551 341
+               Q520 366 457 359
+               Q396 360 381 332
+               Q369 309 397 290Z"
+            fill="#fffdf2" class="outline"/>
+
+      <path d="M547 241Q542 271 554 293Q565 319 538 332"
+            fill="none" stroke="#d5e3df" stroke-width="10"
+            stroke-linecap="round"/>
+
+      <!-- 鹈鹕标志性的长喙和喉囊 -->
+      <path d="M579 213L738 220
+               Q712 239 675 258
+               Q634 282 608 262
+               Q589 250 579 213Z"
+            fill="#f3bd65" class="outline"/>
+      <path d="M595 225Q615 261 642 262"
+            fill="none" stroke="#dc9447" stroke-width="3"
+            stroke-linecap="round"/>
+      <path d="M579 207Q643 204 742 219
+               Q748 222 739 226L584 221Z"
+            fill="#f2a447" class="outline"/>
+      <path d="M596 214L721 221" stroke="#ffda83" stroke-width="3"
+            stroke-linecap="round"/>
+
+      <circle cx="569" cy="201" r="11" fill="#e9e8cd"/>
+      <circle cx="572" cy="201" r="5" fill="#253b42"/>
+      <circle cx="574" cy="199" r="1.7" fill="#ffffff"/>
+      <path d="M547 183L541 174M553 180L553 170"
+            class="outline" fill="none"/>
+
+      <path d="M522 262Q539 271 560 262L565 275Q545 287 522 277Z"
+            fill="#e97865" class="outline"/>
+
+      <!-- 翅膀向前握住车把 -->
+      <path d="M417 300Q446 289 477 306
+               Q506 322 544 296
+               Q555 289 565 296L582 300
+               Q588 309 576 314L554 312
+               Q510 354 463 339
+               Q431 333 417 300Z"
+            fill="#e5eeea" class="outline"/>
+      <path d="M433 309Q462 333 493 329"
+            fill="none" stroke="#b0c7c4" stroke-width="3"
+            stroke-linecap="round"/>
+    </g>
+
+    <!-- 近侧腿独立计算膝盖位置，与脚踏保持连接 -->
+    <path id="near-leg" class="outline" fill="none" stroke="#efaf50"/>
+    <g id="near-foot">
+      <path d="M-16-6Q-6-14 4-5L26 5Q32 12 21 13H-15Z"
+            fill="#f6b951" class="outline"/>
+      <path d="M7 3L14 9M17 5L23 10"
+            stroke="#cd8b3b" stroke-width="2" stroke-linecap="round"/>
+      <path d="M-18 18H24" stroke="#253b42" stroke-width="7"
+            stroke-linecap="round"/>
+    </g>
+    <circle cx="470" cy="446" r="5" fill="#e97865"/>
+  </svg>
+</main>
+
+
+
+
+</body>
+</html>
